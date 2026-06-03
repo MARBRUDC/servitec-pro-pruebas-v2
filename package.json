@@ -1,0 +1,12 @@
+{
+  "name": "servitec-pro-v13-26-2-estatica-vercel",
+  "version": "13.26.2",
+  "private": true,
+  "scripts": {
+    "build": "node build.cjs",
+    "check": "node --check src/main.js && node --check build.cjs",
+    "dev": "node local-server.cjs"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
