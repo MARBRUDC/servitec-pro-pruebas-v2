@@ -194,3 +194,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 /* V13.25.0 Documentos por estado */
 .execSelector .miniTable td:last-child{color:#0f766e}
 .card h3{color:#00224d}
+
+/* V13.26.3 - ejecución por actividad */
+.actDetail{display:block;padding:12px;margin:10px 0;border:1px solid #cfe8ff;border-radius:14px;background:#f8fbff}
+.actHeader{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.actDetail textarea{width:100%;min-height:58px;margin:6px 0}
+.activityEvidence{margin-top:8px}
+.notice.small{font-size:.9rem;margin:6px 0 10px}
