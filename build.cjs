@@ -1,19 +1,2 @@
-const fs = require('fs');
-const path = require('path');
-const root = __dirname;
-const src = path.join(root, 'src');
-const dist = path.join(root, 'dist');
-fs.rmSync(dist, { recursive: true, force: true });
-fs.mkdirSync(dist, { recursive: true });
-const env = {
-  SUPABASE_URL: process.env.VITE_SUPABASE_URL || '',
-  SUPABASE_KEY: process.env.VITE_SUPABASE_KEY || ''
-};
-let html = fs.readFileSync(path.join(src, 'index.html'), 'utf8');
-html = html.replace('/*__SERVITEC_ENV__*/', `window.SERVITEC_ENV=${JSON.stringify(env)};`);
-fs.writeFileSync(path.join(dist, 'index.html'), html);
-['main.js','styles.css','supabase-schema.sql','README.md'].forEach(file => {
-  const from = path.join(src, file);
-  if (fs.existsSync(from)) fs.copyFileSync(from, path.join(dist, file));
-});
-console.log('SERVITEC PRO V13.27.2 static build OK');
+const fs=require('fs');const path=require('path');fs.rmSync('dist',{recursive:true,force:true});fs.mkdirSync('dist',{recursive:true});for(const f of ['index.html','main.js','styles.css','supabase-schema.sql','README.md']){const src=path.join('src',f);if(fs.existsSync(src))fs.copyFileSync(src,path.join('dist',f));}
+console.log('Build OK: dist generado');

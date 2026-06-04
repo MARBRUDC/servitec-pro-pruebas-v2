@@ -1,28 +1,14 @@
-# SERVITEC PRO V13.27.0 ESTABLE
+# SERVITEC PRO V13.28.0 BASE LIMPIA ESTABLE
 
-Base estable para Vercel con arquitectura estática `src/ → dist/`.
+Versión reconstruida desde cero para evitar mezcla de código antiguo.
 
-## Correcciones incluidas
-
-- Migración automática desde `servitec_v139` y `servitec_pro_state_v1317` hacia `servitec_pro_state_v1327`.
-- Persistencia triple temporal para evitar pérdida de empresas, clientes y cotizaciones.
-- Correlativos por empresa como **siguiente número a emitir**: si colocas 206, sale `COT-2026-0206`.
-- Edición de cotización conserva ID y correlativo.
-- PDF de cotización profesional, compacto, con logo/firma y marca de agua.
-- PDF toma la empresa de la cotización/empresa activa, no la primera empresa del arreglo.
-- Botones Exportar/Importar respaldo JSON en Configuración.
-- Vercel configurado como sitio estático: `npm run build` y salida `dist`.
-
-## Despliegue Vercel
-
-Framework/Application preset: Other
-Build Command: npm run build
-Output Directory: dist
-Install Command: npm install
-
-## Antes de subir una nueva versión
-
-1. Exportar respaldo JSON desde Configuración.
-2. Verificar empresa activa.
-3. Verificar correlativo siguiente.
-4. Crear cotización de prueba y PDF.
+Incluye:
+- Arquitectura estática Vercel: `src/` → `dist/`.
+- Almacenamiento único: `servitec_pro_state_v1328`.
+- Migración desde `servitec_pro_state_v1327`, `servitec_pro_state_v1317` y `servitec_v139`.
+- Exportar/importar respaldo JSON.
+- Multiempresa con logo, firma, datos bancarios, condiciones comerciales y correlativos.
+- Correlativo como próximo número: 206 genera COT-2026-0206.
+- Cotización con PDF profesional y marca de agua.
+- Ejecución por actividad con estado, comentario, recomendación y evidencias antes/durante/después.
+- Acta e informe con estructuras diferentes.

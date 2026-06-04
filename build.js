@@ -1,1 +1,1 @@
-require('./build.cjs');
+require('./build.cjs')

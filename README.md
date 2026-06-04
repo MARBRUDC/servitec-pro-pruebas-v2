@@ -1,25 +1,14 @@
-# SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL
+# SERVITEC PRO V13.28.0 BASE LIMPIA ESTABLE
 
-Base estable para Vercel con arquitectura estática `src/ -> dist/`.
+Versión reconstruida desde cero para evitar mezcla de código antiguo.
 
-## Correcciones incluidas
-
-- Versión interna, README, `src/main.js`, `dist/main.js`, `index.html` y `dist/index.html` sincronizados en V13.27.2.
-- Migración automática desde `servitec_pro_state_v1317` y `servitec_v139`.
-- Escritura sincronizada en `servitec_pro_state_v1327`, `servitec_pro_state_v1317` y `servitec_v139`.
-- Correlativos por empresa como **siguiente número a emitir**: si colocas 206, genera `COT-2026-0206`.
-- PDF de cotización profesional con empresa activa/de la cotización, logo, firma, marca de agua, condiciones comerciales, banco, cuenta y CCI.
-- Exportar e importar respaldo JSON desde Configuración.
-- Estructura preparada para ejecución por actividad.
-
-## Importante al subir a GitHub
-
-Si el repositorio ya tenía archivos antiguos en raíz (`main.js`, `server.js`, `index.html`, `styles.css`, `build.js`), esta versión los incluye actualizados para evitar que Vercel sirva código viejo. Aun así, lo ideal es limpiar el repositorio y dejar solo esta versión.
-
-## Configuración Vercel
-
-- Framework: Other
-- Root Directory: `./`
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Install Command: `npm install`
+Incluye:
+- Arquitectura estática Vercel: `src/` → `dist/`.
+- Almacenamiento único: `servitec_pro_state_v1328`.
+- Migración desde `servitec_pro_state_v1327`, `servitec_pro_state_v1317` y `servitec_v139`.
+- Exportar/importar respaldo JSON.
+- Multiempresa con logo, firma, datos bancarios, condiciones comerciales y correlativos.
+- Correlativo como próximo número: 206 genera COT-2026-0206.
+- Cotización con PDF profesional y marca de agua.
+- Ejecución por actividad con estado, comentario, recomendación y evidencias antes/durante/después.
+- Acta e informe con estructuras diferentes.
