@@ -1,15 +1,18 @@
-/* SERVITEC PRO V13.26.4 PDF COTIZACIÓN CORREGIDO - frontend estatico para Vercel/Supabase */
+/* SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL - frontend estatico para Vercel/Supabase */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const uid=()=>Math.random().toString(36).slice(2,9), money=n=>'S/ '+(Number(n)||0).toFixed(2);
 const MODES={GENERAL:'Actividades generales → varios equipos',PROPIAS:'Cada equipo con sus propias actividades',REPUESTOS:'Venta de repuestos / accesorios'};
 const seed={empresas:[{id:'emp1',nombre:'SERVITEC BIOMEDICAL',ruc:'20600000001',telefono:'999 999 999',correo:'ventas@servitec.pe',direccion:'',logo:'',firma:'',gerente:'GERENTE GENERAL',observacionesCot:'• Incluye mano de obra especializada.\n• No incluye repuestos, consumibles o trabajos adicionales no descritos.\n• Toda actividad adicional será cotizada por separado.',formaPago:'Según coordinación / contado comercial',tiempoEjecucion:'Según programación y disponibilidad del área usuaria',lugarServicio:'En establecimiento del cliente',validez:'15 días calendario',garantia:'Según alcance del servicio ejecutado'}],clientes:[{id:'cli1',nombre:'Hospital Regional Demo',ruc:'-',establecimientos:[{id:'est1',nombre:'Sede Principal',areas:[{id:'ar1',nombre:'Odontología'},{id:'ar2',nombre:'Centro quirúrgico'}]}]}],cotizaciones:[],inventario:[]};
 let state=load(), tab='Dashboard', draft=null, cloud='Modo local', timer=null;
 const env=window.SERVITEC_ENV||{}; const hasCloud=!!(env.SUPABASE_URL&&env.SUPABASE_KEY);
-function clone(o){return JSON.parse(JSON.stringify(o))} function load(){try{return {...clone(seed),...JSON.parse(localStorage.getItem('servitec_v139')||'{}')}}catch{return clone(seed)}}
-function persist(){localStorage.setItem('servitec_v139',JSON.stringify(state)); if(hasCloud){clearTimeout(timer);timer=setTimeout(saveCloud,500)}}
-async function loadCloud(){if(!hasCloud){cloud='Modo local: variables no leídas';render();return} cloud='Conectando Supabase...';render();try{let r=await fetch(`${env.SUPABASE_URL}/rest/v1/app_state?id=eq.global&select=payload`,{headers:{apikey:env.SUPABASE_KEY,Authorization:`Bearer ${env.SUPABASE_KEY}`}});let d=await r.json();if(d?.[0]?.payload){state={...clone(seed),...d[0].payload};localStorage.setItem('servitec_v139',JSON.stringify(state))}cloud='Nube Supabase activa';render()}catch(e){cloud='Modo local: Supabase no respondió';render()}}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function storageScore(s){return (s?.empresas?.length||0)*1000+(s?.cotizaciones?.length||0)*800+(s?.clientes?.length||0)*300+(s?.usuarios?.length||0)*20}
+function readStorageKey(k){try{const raw=localStorage.getItem(k);return raw?JSON.parse(raw):null}catch{return null}}
+function load(){try{const keys=['servitec_pro_state_v1327','servitec_pro_state_v1317','servitec_v139'];const best=[...keys.map(readStorageKey)].filter(Boolean).sort((a,b)=>storageScore(b)-storageScore(a))[0]||{};return {...clone(seed),...best}}catch{return clone(seed)}}
+function persist(){const payload=JSON.stringify(state);['servitec_pro_state_v1327','servitec_pro_state_v1317','servitec_v139'].forEach(k=>{try{localStorage.setItem(k,payload)}catch(e){}}); if(hasCloud){clearTimeout(timer);timer=setTimeout(saveCloud,500)}}
+async function loadCloud(){if(!hasCloud){cloud='Modo local: variables no leídas';render();return} cloud='Conectando Supabase...';render();try{let r=await fetch(`${env.SUPABASE_URL}/rest/v1/app_state?id=eq.global&select=payload`,{headers:{apikey:env.SUPABASE_KEY,Authorization:`Bearer ${env.SUPABASE_KEY}`}});let d=await r.json();if(d?.[0]?.payload){state={...clone(seed),...d[0].payload};['servitec_pro_state_v1327','servitec_pro_state_v1317','servitec_v139'].forEach(k=>localStorage.setItem(k,JSON.stringify(state)))}cloud='Nube Supabase activa';render()}catch(e){cloud='Modo local: Supabase no respondió';render()}}
 async function saveCloud(){try{await fetch(`${env.SUPABASE_URL}/rest/v1/app_state`,{method:'POST',headers:{apikey:env.SUPABASE_KEY,Authorization:`Bearer ${env.SUPABASE_KEY}`,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},body:JSON.stringify({id:'global',payload:state,updated_at:new Date().toISOString()})});cloud='Nube Supabase activa';$('.tag')&&($('.tag').textContent=cloud)}catch(e){cloud='Modo local: error Supabase';$('.tag')&&($('.tag').textContent=cloud)}}
-function render(){app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.26.4 PDF COTIZACIÓN CORREGIDO</h1><b>Base consolidada: Cotización + Ejecución + Actas + Informes + Supabase</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind()}
+function render(){app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL</h1><b>Base consolidada: Cotización + Ejecución + Actas + Informes + Supabase</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind()}
 const views={Dashboard(){return `<section class="wrap"><h2>Dashboard</h2><div class="grid"><div class="card"><b>Empresas</b><h2>${state.empresas.length}</h2></div><div class="card"><b>Clientes</b><h2>${state.clientes.length}</h2></div><div class="card"><b>Cotizaciones</b><h2>${state.cotizaciones.length}</h2></div><div class="card"><b>Inventario</b><h2>${state.inventario.length}</h2></div></div><p class="notice">Versión con ejecución real controlada por Orden de Compra/Servicio y SIAF. La ejecución toma las actividades reales de la cotización seleccionada.</p></section>`},Empresas(){return `<section class="wrap">${back()}<h2>Empresas</h2><p class="notice">Aquí se guarda el logo, firma del gerente, datos comerciales y observaciones que salen automáticamente en los PDF.</p><div class="grid"><input id="empNom" placeholder="Razón social"><input id="empRuc" placeholder="RUC"><input id="empTel" placeholder="Teléfono"><input id="empCor" placeholder="Correo"><input id="empDir" placeholder="Dirección"><input id="empGer" placeholder="Gerente / Representante"></div><br><button class="btn green" data-act="saveEmpresa">+ Nueva empresa</button><hr>${state.empresas.map(e=>empresaCard(e)).join('')}</section>`},Clientes(){let c=state.clientes[0];return `<section class="wrap">${back()}<h2>Clientes</h2><div class="grid2"><input id="cliNom" placeholder="Nombre cliente"><input id="cliRuc" placeholder="RUC"></div><br><button class="btn green" data-act="saveCliente">+ Nuevo cliente</button><hr><div class="grid2"><select id="cliSel">${state.clientes.map(x=>`<option value="${x.id}">${x.nombre}</option>`).join('')}</select><input id="estNom" placeholder="Nuevo establecimiento"></div><br><button class="btn green" data-act="saveEst">Agregar establecimiento</button>${c?`<div class="card"><h3>${c.nombre}</h3>${c.establecimientos.map(e=>`<div class="card"><b>${e.nombre}</b><ul>${e.areas.map(a=>`<li>${a.nombre}</li>`).join('')}</ul><div class="grid2"><input id="area_${e.id}" placeholder="Área usuaria"><button class="btn" data-act="saveArea" data-id="${e.id}">Agregar área</button></div></div>`).join('')}</div>`:''}</section>`},Cotizaciones(){return draft?quoteForm():quoteList()},Ejecución(){return viewEjecucion()},Actas(){return docs('ACTA DE CONFORMIDAD')},Informes(){return docs('INFORME TÉCNICO')},Inventario(){return `<section class="wrap">${back()}<h2>Inventario / QR / Código de barras</h2><div class="grid"><select id="invTipo"><option>Equipo</option><option>Repuesto</option><option>Accesorio</option></select><input id="invCod" placeholder="Código"><input id="invDesc" placeholder="Descripción"><input id="invSerie" placeholder="Serie"></div><br><button class="btn green" data-act="saveInv">Agregar</button>${table(['Tipo','Descripción','Código','QR','Barras'],state.inventario.map(i=>[i.tipo,i.descripcion,i.codigo,`▣ ${i.codigo||i.id}`,`|||| ${i.codigo||i.id} ||||`]))}</section>`},Configuración(){return `<section class="wrap">${back()}<h2>Configuración</h2><p class="notice">${cloud}</p><p>Variables Vercel: VITE_SUPABASE_URL y VITE_SUPABASE_KEY.</p></section>`}};
 function back(){return `<button class="btn primary" onclick="tab='Dashboard';draft=null;render()">← Atrás</button>`} function table(h,rows){return `<div class="tableWrap"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c||''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
 function estadoCot(q){return q.estado || (q.ordenNumero&&q.siaf?'En ejecución':'Cotización')}
@@ -221,7 +224,7 @@ loadCloud();render();
 ========================= */
 function ensureActiveEmpresa(){ if(!state.activeEmpresaId && state.empresas && state.empresas[0]) state.activeEmpresaId=state.empresas[0].id; }
 function activeEmpresa(){ ensureActiveEmpresa(); return state.empresas.find(e=>e.id===state.activeEmpresaId)||state.empresas[0]||{}; }
-function render(){ensureActiveEmpresa();app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.26.4 PDF COTIZACIÓN CORREGIDO</h1><b>Base consolidada: Cotización + Ejecución + Actas + Informes + Supabase</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind();}
+function render(){ensureActiveEmpresa();app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL</h1><b>Base consolidada: Cotización + Ejecución + Actas + Informes + Supabase</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind();}
 views.Dashboard=function(){let emp=activeEmpresa();return `<section class="wrap"><h2>Dashboard</h2><div class="grid"><div class="card"><b>Empresas</b><h2>${state.empresas.length}</h2></div><div class="card"><b>Clientes</b><h2>${state.clientes.length}</h2></div><div class="card"><b>Cotizaciones</b><h2>${state.cotizaciones.length}</h2></div><div class="card"><b>Inventario</b><h2>${state.inventario.length}</h2></div></div><p class="notice"><b>Empresa activa:</b> ${emp.nombre||'No definida'}<br>Versión con empresa activa, ejecución ampliada, acta de conformidad e informe técnico diferenciados.</p></section>`}
 views.Empresas=function(){let act=activeEmpresa();return `<section class="wrap">${back()}<h2>Empresas</h2><p class="notice">Empresa activa actual: <b>${act.nombre||'Sin empresa'}</b>. La empresa activa alimenta cotizaciones, PDF, ejecución, actas e informes.</p><div class="grid"><input id="empNom" placeholder="Razón social"><input id="empRuc" placeholder="RUC"><input id="empTel" placeholder="Teléfono"><input id="empCor" placeholder="Correo"><input id="empDir" placeholder="Dirección"><input id="empGer" placeholder="Gerente / Representante"><input id="empCargo" placeholder="Cargo del gerente"></div><br><button class="btn green" data-act="saveEmpresa">+ Nueva empresa</button><hr>${state.empresas.map(e=>empresaCard(e)).join('')}</section>`}
 function newDraft(){let c=state.clientes[0]||{}, e=c.establecimientos?.[0]||{}, a=e.areas?.[0]||{};return {id:uid(),numero:`COT-${new Date().getFullYear()}-${String(state.cotizaciones.length+1).padStart(4,'0')}`,empresaId:activeEmpresa()?.id||'',clienteId:c.id||'',estId:e.id||'',areaId:a.id||'',tipo:'Mantenimiento preventivo',config:MODES.GENERAL,equipos:[],acts:[],repuestos:[],total:0,fecha:new Date().toISOString()}}
@@ -348,7 +351,7 @@ function newDraft(){let c=state.clientes[0]||{}, e=c.establecimientos?.[0]||{}, 
 function saveQuote(){let {c,e,a}=cdata();applyTax(draft);draft.empresaId=state.activeEmpresaId||draft.empresaId||state.empresas[0]?.id||'';draft.clienteNombre=c.nombre;draft.establecimientoNombre=e.nombre;draft.areaNombre=a.nombre;let i=state.cotizaciones.findIndex(q=>q.id===draft.id);i>=0?state.cotizaciones[i]=clone(draft):state.cotizaciones.push(clone(draft));draft=null;persist();alert('Cotización guardada correctamente. Subtotal, IGV y total quedaron registrados.');render()}
 function quoteList(){normalizeState();return `<section class="wrap">${back()}<h2>Cotizaciones</h2><button class="btn green" onclick="draft=newDraft();render()">+ Nueva cotización</button>${table(['N°','Cliente','Configuración','Estado','Subtotal','IGV','Total','Acciones'],state.cotizaciones.map(q=>[q.numero,q.clienteNombre,q.config,estadoBadge(q),money(q.subtotal),money(q.igv),money(q.total),`<div class="actions"><button class="btn" onclick="draft=clone(state.cotizaciones.find(x=>x.id==='${q.id}'));render()">Editar</button><button class="btn green" onclick="printQuote('${q.id}','COTIZACIÓN')">PDF</button><button class="btn" onclick="tab='Ejecución';localStorage.setItem('servitec_exec_qid','${q.id}');render()">Ejecutar</button><button class="btn" onclick="csv('${q.id}')">Excel</button><button class="btn" onclick="word('${q.id}')">Word</button><button class="btn danger" onclick="delQuote('${q.id}')">Eliminar</button></div>`]))}</section>`}
 function quoteForm(){let {c,ests,e,areas}=cdata();applyTax(draft);return `<section class="wrap">${back()}<h2>Nueva cotización</h2><p class="notice"><b>Empresa activa:</b> ${(activeEmpresa().nombre||'Sin empresa')}. El IGV se calcula automáticamente al 18%.</p><div class="grid"><select data-k="clienteId">${state.clientes.map(x=>`<option value="${x.id}" ${x.id===draft.clienteId?'selected':''}>${x.nombre}</option>`)}</select><select data-k="estId">${ests.map(x=>`<option value="${x.id}" ${x.id===draft.estId?'selected':''}>${x.nombre}</option>`)}</select><select data-k="areaId">${areas.map(x=>`<option value="${x.id}" ${x.id===draft.areaId?'selected':''}>${x.nombre}</option>`)}</select><select data-k="tipo">${['Mantenimiento preventivo','Mantenimiento correctivo','Calibración','Servicio + repuestos','Venta'].map(x=>`<option ${x===draft.tipo?'selected':''}>${x}</option>`)}</select><select data-k="config">${Object.values(MODES).map(x=>`<option ${x===draft.config?'selected':''}>${x}</option>`)}</select></div><div class="bar"><span class="pill">${draft.config}</span><b class="total">Total con IGV: ${money(draft.total)}</b></div>${totalsBar(draft)}${modeView()}<div class="bar"><button class="btn green" onclick="saveQuote()">Guardar y volver a lista</button><button class="btn" onclick="applyTax(draft);render()">Actualizar totales</button></div></section>`}
-function render(){ensureActiveEmpresa();normalizeState();app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.26.4 PDF COTIZACIÓN CORREGIDO</h1><b>Cotización dinámica + Nube real + IGV 18% + PDFs corporativos</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind();}
+function render(){ensureActiveEmpresa();normalizeState();app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL</h1><b>Cotización dinámica + Nube real + IGV 18% + PDFs corporativos</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind();}
 views.Configuración=function(){return `<section class="wrap">${back()}<h2>Configuración de nube</h2><p class="notice"><b>Estado:</b> ${cloud}</p><p>En Vercel crea estas variables de entorno:</p><div class="card"><b>VITE_SUPABASE_URL</b><br><small>URL del proyecto Supabase.</small><hr><b>VITE_SUPABASE_KEY</b><br><small>anon public key de Supabase.</small></div><p>Luego ejecuta en Supabase el archivo <b>supabase-schema.sql</b>, redeploy en Vercel y listo: las cotizaciones quedarán guardadas en nube. Sin eso, trabaja en modo local.</p></section>`}
 function quoteDoc(q){
   applyTax(q);
@@ -411,7 +414,7 @@ function docs(t){
 }
 views.Actas=function(){return docs('ACTA DE CONFORMIDAD')};
 views.Informes=function(){return docs('INFORME TÉCNICO')};
-function render(){ensureActiveEmpresa();normalizeState();app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.26.4 PDF COTIZACIÓN CORREGIDO</h1><b>Cotización dinámica + Nube real + IGV 18% + PDFs corporativos</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind();}
+function render(){ensureActiveEmpresa();normalizeState();app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL</h1><b>Cotización dinámica + Nube real + IGV 18% + PDFs corporativos</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind();}
 
 /* =========================
    SERVITEC PRO V13.17.5 - TRAZABILIDAD DE EQUIPOS
@@ -447,7 +450,7 @@ function execRowsBase(q){
 }
 function tableExec(rs,q){let exec=q.execRows||[];let extra=q.execExtras||[];return `<h3>Actividades cotizadas</h3><p class="notice">Cada fila corresponde a un equipo individualizado y una actividad. Usa serie/patrimonial para diferenciar equipos repetidos.</p><div class="tableWrap"><table><thead><tr><th>Equipo identificado</th><th>Actividad/Repuesto</th><th>Estado</th><th>Observación</th><th>Evidencia</th></tr></thead><tbody>${rs.map((r,i)=>{let er=exec[i]||{};return `<tr><td>${equipoEtiqueta(r)}</td><td>${r.descripcion||''}</td><td><select onchange="updateExecCell('${q.id}',${i},'estado',this.value)"><option ${er.estado==='Pendiente'?'selected':''}>Pendiente</option><option ${er.estado==='En proceso'?'selected':''}>En proceso</option><option ${er.estado==='Terminado'?'selected':''}>Terminado</option><option ${er.estado==='Conforme'?'selected':''}>Conforme</option><option ${er.estado==='Observado'?'selected':''}>Observado</option></select></td><td><textarea placeholder="Observación técnica" onchange="updateExecCell('${q.id}',${i},'observacion',this.value)">${er.observacion||''}</textarea></td><td><input type="file" accept="image/*" onchange="updateExecEvidence('${q.id}',${i},this.files[0])"><small>${er.evidenciaNombre||''}</small></td></tr>`}).join('')}</tbody></table></div><h3>Actividades adicionales en campo</h3><p class="notice">Agrega trabajos encontrados durante la intervención para que el equipo quede operativo. No modifica el valor de la cotización original.</p><button class="btn green" onclick="addExecExtra('${q.id}')">+ Actividad adicional</button><div class="tableWrap"><table><thead><tr><th>Descripción adicional</th><th>Estado</th><th>Comentario</th><th>Evidencia</th></tr></thead><tbody>${extra.map((r,i)=>`<tr><td><textarea placeholder="Ej.: Ajuste de tarjeta, limpieza de ventilador, cambio de fusible" onchange="updateExecExtra('${q.id}',${i},'descripcion',this.value)">${r.descripcion||''}</textarea></td><td><select onchange="updateExecExtra('${q.id}',${i},'estado',this.value)"><option ${r.estado==='Pendiente'?'selected':''}>Pendiente</option><option ${r.estado==='En proceso'?'selected':''}>En proceso</option><option ${r.estado==='Terminado'?'selected':''}>Terminado</option><option ${r.estado==='Conforme'?'selected':''}>Conforme</option><option ${r.estado==='Observado'?'selected':''}>Observado</option></select></td><td><textarea placeholder="Comentario de la actividad adicional" onchange="updateExecExtra('${q.id}',${i},'observacion',this.value)">${r.observacion||''}</textarea></td><td><input type="file" accept="image/*" onchange="updateExecExtraEvidence('${q.id}',${i},this.files[0])"><small>${r.evidenciaNombre||''}</small></td></tr>`).join('')}</tbody></table></div><h3>Comentarios, recomendaciones y conformidad</h3><div class="grid2"><textarea placeholder="Comentarios técnicos generales" onchange="updateExecMeta('${q.id}','comentarioTecnico',this.value)">${q.comentarioTecnico||''}</textarea><textarea placeholder="Recomendaciones técnicas" onchange="updateExecMeta('${q.id}','recomendaciones',this.value)">${q.recomendaciones||''}</textarea><input placeholder="Garantía del servicio" value="${esc(q.garantiaExec||'Según alcance del servicio ejecutado')}" onchange="updateExecMeta('${q.id}','garantiaExec',this.value)"><input placeholder="Encargado / responsable del área usuaria" value="${esc(q.usuarioConformidad||'')}" onchange="updateExecMeta('${q.id}','usuarioConformidad',this.value)"><input placeholder="DNI del encargado" value="${esc(q.usuarioDni||'')}" onchange="updateExecMeta('${q.id}','usuarioDni',this.value)"><input placeholder="Cargo del encargado" value="${esc(q.usuarioCargo||'')}" onchange="updateExecMeta('${q.id}','usuarioCargo',this.value)"><input placeholder="Teléfono / contacto del encargado" value="${esc(q.usuarioTelefono||'')}" onchange="updateExecMeta('${q.id}','usuarioTelefono',this.value)"><input placeholder="Correo del encargado" value="${esc(q.usuarioCorreo||'')}" onchange="updateExecMeta('${q.id}','usuarioCorreo',this.value)"><input placeholder="Nombre del técnico responsable" value="${esc(q.tecnicoNombre||'')}" onchange="updateExecMeta('${q.id}','tecnicoNombre',this.value)"><input placeholder="DNI del técnico" value="${esc(q.tecnicoDni||'')}" onchange="updateExecMeta('${q.id}','tecnicoDni',this.value)"><input placeholder="Cargo del técnico" value="${esc(q.tecnicoCargo||'Técnico responsable')}" onchange="updateExecMeta('${q.id}','tecnicoCargo',this.value)"><input placeholder="Colegiatura / código técnico, si aplica" value="${esc(q.tecnicoCodigo||'')}" onchange="updateExecMeta('${q.id}','tecnicoCodigo',this.value)"></div><textarea placeholder="Observaciones del área usuaria para el acta" onchange="updateExecMeta('${q.id}','usuarioObservaciones',this.value)">${q.usuarioObservaciones||''}</textarea><div class="grid2"><label class="uploadBox"><b>Firma área usuaria</b><input type="file" accept="image/*" onchange="updateExecSignature('${q.id}','firmaAreaUsuaria',this.files[0])"><span>${q.firmaAreaUsuariaNombre||q.firmaAreaUsuaria?'Firma cargada ✅':'Sin firma'}</span></label><label class="uploadBox"><b>Firma técnico responsable</b><input type="file" accept="image/*" onchange="updateExecSignature('${q.id}','firmaTecnico',this.files[0])"><span>${q.firmaTecnicoNombre||q.firmaTecnico?'Firma cargada ✅':'Sin firma'}</span></label></div><div class="bar"><span class="pill">Estado: ${estadoCot(q)}</span>${allDone(q)?'<span class="badge green">Lista para acta e informe</span>':'<span class="badge orange">Ejecución en curso</span>'}</div>`}
 function equiposDocRows(q){return (q.equipos||[]).map((e,i)=>`<tr><td>${i+1}</td><td>${safe(e.nombre)||'Equipo biomédico'}</td><td>${safe(e.marca)||'-'}</td><td>${safe(e.modelo)||'-'}</td><td>${safe(e.serie)||'-'}</td><td>${safe(e.codigoPatrimonial||e.codigo)||'-'}</td><td>${safe(e.ubicacion)||'-'}</td></tr>`).join('') || `<tr><td>1</td><td>Equipos según cotización</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>`}
-function render(){ensureActiveEmpresa();normalizeState();app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.26.4 PDF COTIZACIÓN CORREGIDO</h1><b>Cotización dinámica + Nube real + IGV 18% + ejecución por serie/patrimonial + documentos diferenciados</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind();}
+function render(){ensureActiveEmpresa();normalizeState();app.innerHTML=`<header class="top"><div><h1>SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL</h1><b>Cotización dinámica + Nube real + IGV 18% + ejecución por serie/patrimonial + documentos diferenciados</b></div><div class="tag">${cloud}</div></header><nav class="nav">${['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración'].map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${views[tab]()}</main>`; bind();}
 
 /* =========================
    SERVITEC PRO V13.18.1 - ACTAS/INFORMES INTEGRADOS
@@ -5806,7 +5809,7 @@ try{render()}catch(e){}
    3) Si todas las actividades de un equipo están terminadas/conformes, el equipo pasa automáticamente a Finalizado.
    4) El informe técnico usa la misma trazabilidad, con secciones independientes del acta.
 ============================================================ */
-const VERSION_ACTA_ACT_REP='SERVITEC PRO V13.26.4 PDF COTIZACIÓN CORREGIDO';
+const VERSION_ACTA_ACT_REP='SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL';
 
 function s258_e(v){
   return String(v==null?'':v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -5955,3 +5958,275 @@ render=function(){
   bind(); if(typeof initSignaturePads==='function')initSignaturePads();
 }
 render();
+
+/* ============================================================
+   SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL - CONSOLIDACIÓN REAL
+   Bloque final de prioridad operativa:
+   - Almacenamiento único con migración desde servitec_v139 y servitec_pro_state_v1317.
+   - Correlativos por empresa como SIGUIENTE A EMITIR: si colocas 206, sale COT-2026-0206.
+   - PDF de cotización profesional en una hoja cuando el contenido es corto.
+   - PDF siempre toma la empresa de la cotización / empresa activa, no empresas[0].
+   - Exportar / importar respaldo JSON para no perder datos entre versiones.
+============================================================ */
+const SERVITEC_VERSION_ESTABLE='SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL';
+const S270_KEYS=['servitec_pro_state_v1327','servitec_pro_state_v1317','servitec_v139'];
+
+function s270_clone(o){try{return JSON.parse(JSON.stringify(o||{}))}catch(e){return {}}}
+function s270_safe(v){return String(v==null?'':v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
+function s270_num(v){return Number(String(v??'').replace(/^0+(?=\d)/,''))||0}
+function s270_money(v){try{return typeof money==='function'?money(v):('S/ '+Number(v||0).toFixed(2))}catch(e){return 'S/ '+Number(v||0).toFixed(2)}}
+function s270_year(){return new Date().getFullYear()}
+function s270_score(s){return (s?.empresas?.length||0)*1000+(s?.clientes?.length||0)*100+(s?.cotizaciones?.length||0)*500+(s?.inventario?.length||0)*10+(s?.usuarios?.length||0)}
+function s270_readKey(k){try{const raw=localStorage.getItem(k);return raw?JSON.parse(raw):null}catch(e){return null}}
+function s270_bestState(){
+  const candidates=[state,...S270_KEYS.map(s270_readKey)].filter(x=>x&&typeof x==='object');
+  candidates.sort((a,b)=>s270_score(b)-s270_score(a));
+  return s270_clone(candidates[0]||state||seed||{});
+}
+function s270_extractDocNum(code){
+  const m=String(code||'').match(/(\d+)(?!.*\d)/);
+  return m?parseInt(m[1],10)||0:0;
+}
+function s270_ensureEmpresa(e){
+  if(!e)return e;
+  e.correlativos=e.correlativos||{};
+  e.prefijos=e.prefijos||{};
+  ['cotizacion','acta','informe','os'].forEach(k=>{e.prefijos[k]=e.prefijos[k]||({cotizacion:'COT',acta:'ACT',informe:'INF',os:'OS'}[k])});
+  // Regla nueva: correlativos[k] guarda el SIGUIENTE A EMITIR, no el último usado.
+  const legacyCot=s270_num(e.correlativoCotizacion||e.corrCotizacion);
+  const legacyAct=s270_num(e.correlativoActa||e.corrActa);
+  const legacyInf=s270_num(e.correlativoInforme||e.corrInforme);
+  const legacyOs=s270_num(e.correlativoOS||e.corrOs);
+  if(!s270_num(e.correlativos.cotizacion) && legacyCot) e.correlativos.cotizacion=legacyCot;
+  if(!s270_num(e.correlativos.acta) && legacyAct) e.correlativos.acta=legacyAct;
+  if(!s270_num(e.correlativos.informe) && legacyInf) e.correlativos.informe=legacyInf;
+  if(!s270_num(e.correlativos.os) && legacyOs) e.correlativos.os=legacyOs;
+  ['cotizacion','acta','informe','os'].forEach(k=>{e.correlativos[k]=Math.max(1,s270_num(e.correlativos[k])||1)});
+  return e;
+}
+function s270_ensureAll(){
+  state.empresas=Array.isArray(state.empresas)?state.empresas:[];
+  state.clientes=Array.isArray(state.clientes)?state.clientes:[];
+  state.cotizaciones=Array.isArray(state.cotizaciones)?state.cotizaciones:[];
+  state.inventario=Array.isArray(state.inventario)?state.inventario:[];
+  state.usuarios=Array.isArray(state.usuarios)?state.usuarios:[];
+  state.empresas.forEach(s270_ensureEmpresa);
+  if(!state.activeEmpresaId || !state.empresas.some(e=>e.id===state.activeEmpresaId)){
+    const qEmp=state.cotizaciones.find(q=>q.empresaId)?.empresaId;
+    state.activeEmpresaId=state.empresas.some(e=>e.id===qEmp)?qEmp:(state.empresas[0]?.id||'');
+  }
+  state.cotizaciones.forEach(q=>{
+    q.empresaId=q.empresaId||q.empresa_id||state.activeEmpresaId;
+    q.numero=q.numero||q.codigo||q.correlativo||'';
+    q.codigo=q.codigo||q.numero;
+    q.correlativo=q.correlativo||q.numero;
+    if(!q.subtotal && q.total){q.subtotal=+(Number(q.total)/1.18).toFixed(2);q.igv=+(Number(q.total)-Number(q.subtotal)).toFixed(2)}
+  });
+  s270_fixLegacyQuoteNumbers();
+  return state;
+}
+function s270_empById(id){return (state.empresas||[]).find(e=>String(e.id)===String(id))||null}
+function s270_activeEmpresa(){s270_ensureAll();return s270_empById(state.activeEmpresaId)||state.empresas[0]||{}}
+function activeEmpresa(){return s270_activeEmpresa()}
+function ensureActiveEmpresa(){s270_ensureAll()}
+function s270_nextNumber(tipo='cotizacion',emp=s270_activeEmpresa()){
+  s270_ensureEmpresa(emp);
+  return s270_num(emp.correlativos?.[tipo])||1;
+}
+function s270_format(tipo='cotizacion',n=s270_nextNumber(tipo),emp=s270_activeEmpresa()){
+  s270_ensureEmpresa(emp);
+  const p=emp.prefijos?.[tipo]||({cotizacion:'COT',acta:'ACT',informe:'INF',os:'OS'}[tipo]||tipo.toUpperCase());
+  return `${p}-${s270_year()}-${String(s270_num(n)||1).padStart(4,'0')}`;
+}
+function currentNextDocNumber(tipo){return s270_format(tipo,s270_nextNumber(tipo),s270_activeEmpresa())}
+function nextDocNumber(tipo){
+  const emp=s270_activeEmpresa();
+  const n=s270_nextNumber(tipo,emp);
+  const code=s270_format(tipo,n,emp);
+  emp.correlativos[tipo]=n+1;
+  return code;
+}
+function setCorr(tipo,val){const emp=s270_activeEmpresa();s270_ensureEmpresa(emp);emp.correlativos[tipo]=Math.max(1,s270_num(val)||1);s270_persist();}
+function setPref(tipo,val){const emp=s270_activeEmpresa();s270_ensureEmpresa(emp);emp.prefijos[tipo]=String(val||'').trim().toUpperCase()||({cotizacion:'COT',acta:'ACT',informe:'INF',os:'OS'}[tipo]||tipo.toUpperCase());s270_persist();}
+function s2410_nextCotCode(empId){
+  const emp=s270_empById(empId)||s270_activeEmpresa();
+  return s270_format('cotizacion',s270_nextNumber('cotizacion',emp),emp);
+}
+function s270_consumeCot(empId){
+  const emp=s270_empById(empId)||s270_activeEmpresa();
+  const n=s270_nextNumber('cotizacion',emp);
+  const code=s270_format('cotizacion',n,emp);
+  emp.correlativos.cotizacion=n+1;
+  return code;
+}
+function s270_fixLegacyQuoteNumbers(){
+  // Caso detectado: empresa configurada con siguiente 206, pero la cotización quedó como COT-2026-0001.
+  const byEmp={};
+  (state.cotizaciones||[]).forEach(q=>{const id=q.empresaId||state.activeEmpresaId;(byEmp[id]=byEmp[id]||[]).push(q)});
+  Object.entries(byEmp).forEach(([empId,qs])=>{
+    const emp=s270_empById(empId); if(!emp)return; s270_ensureEmpresa(emp);
+    const configured=s270_num(emp.correlativoCotizacion||emp.corrCotizacion||emp.correlativos?.cotizacion);
+    if(configured>=100 && qs.length===1){
+      const q=qs[0]; const n=s270_extractDocNum(q.numero||q.codigo||q.correlativo);
+      if(n>0 && n<100 && !q._s270_correlativo_revisado){
+        const code=s270_format('cotizacion',configured,emp);
+        q.numero=code; q.codigo=code; q.correlativo=code; q._s270_correlativo_revisado=true;
+        emp.correlativos.cotizacion=Math.max(configured+1,s270_num(emp.correlativos.cotizacion)||1);
+      }
+    }
+  });
+}
+function s270_persist(){
+  s270_ensureAll();
+  const payload=JSON.stringify(state);
+  S270_KEYS.forEach(k=>{try{localStorage.setItem(k,payload)}catch(e){}});
+  try{localStorage.setItem('servitec_emp_edit_sel',state.activeEmpresaId||'')}catch(e){}
+  if(hasCloud){clearTimeout(timer);timer=setTimeout(saveCloud,500)}
+}
+persist=s270_persist;
+state=s270_bestState();
+s270_ensureAll();
+s270_persist();
+
+function s270_applyTax(q){
+  const items=s270_quoteRows(q);
+  const subtotal=items.reduce((s,r)=>s+(s270_num(r.cantidad)||1)*Number(r.precio||0),0);
+  q.subtotal=+(subtotal).toFixed(2);q.igv=+(subtotal*0.18).toFixed(2);q.total=+(subtotal*1.18).toFixed(2);return q;
+}
+function s270_quoteRows(q){
+  if(!q)return [];
+  const out=[];
+  (q.acts||q.actividades||[]).forEach(a=>out.push({tipo:'Actividad',descripcion:a.descripcion||a.nombre||'',cantidad:a.cantidad||1,precio:Number(a.precio||0)}));
+  (q.repuestos||[]).forEach(r=>out.push({tipo:'Repuesto',descripcion:r.descripcion||r.nombre||'',codigo:r.codigo||'',cantidad:r.cantidad||1,precio:Number(r.precio||0)}));
+  if((q.config||'')===MODES.PROPIAS){
+    out.length=0;
+    (q.equipos||[]).forEach(e=>(e.acts||[]).forEach(a=>out.push({tipo:'Actividad',descripcion:`${e.nombre||'Equipo'}: ${a.descripcion||a.nombre||''}`,cantidad:a.cantidad||1,precio:Number(a.precio||0)})));
+  }
+  return out.filter(x=>String(x.descripcion||'').trim());
+}
+function s270_clientById(id){return (state.clientes||[]).find(c=>String(c.id)===String(id))||{}}
+function s270_estByIds(c,id){return (c.establecimientos||[]).find(e=>String(e.id)===String(id))||{}}
+function s270_areaByIds(e,id){return (e.areas||[]).find(a=>String(a.id)===String(id))||{}}
+function s270_quoteEmpresa(q){return s270_empById(q?.empresaId)||s270_activeEmpresa()}
+function s270_quoteDoc(q){
+  if(!q)return '<!doctype html><html><body>No se encontró cotización.</body></html>';
+  const emp=s270_quoteEmpresa(q); s270_ensureEmpresa(emp); s270_applyTax(q);
+  const c=s270_clientById(q.clienteId); const e=s270_estByIds(c,q.estId); const a=s270_areaByIds(e,q.areaId);
+  const cliente=q.clienteNombre||c.nombre||''; const est=q.establecimientoNombre||e.nombre||''; const area=q.areaNombre||a.nombre||'';
+  const equipos=(q.equipos||[]).filter(x=>x.nombre||x.marca||x.modelo||x.serie||x.codigoPatrimonial||x.ubicacion);
+  const items=s270_quoteRows(q);
+  const watermark=emp.logo?`<img class="wm" src="${emp.logo}">`:'';
+  const logo=emp.logo?`<img class="logo" src="${emp.logo}">`:'';
+  const firma=emp.firma?`<img class="firmaImg" src="${emp.firma}">`:'';
+  const itemRows=items.map((r,i)=>`<tr><td class="c">${i+1}</td><td>${s270_safe(r.descripcion)}</td><td class="c">${s270_safe(r.cantidad||1)}</td><td class="r">${s270_money(r.precio)}</td><td class="r">${s270_money((s270_num(r.cantidad)||1)*Number(r.precio||0))}</td></tr>`).join('')||'<tr><td colspan="5">Sin ítems registrados.</td></tr>';
+  const eqRows=equipos.length?equipos.map((x,i)=>`<tr><td class="c">${i+1}</td><td>${s270_safe(x.nombre||'Equipo')}</td><td>${s270_safe(x.marca||'')}</td><td>${s270_safe(x.modelo||'')}</td><td>${s270_safe(x.serie||'')}</td></tr>`).join(''):'';
+  const obs=(emp.observacionesCot||'• Incluye mano de obra especializada.\n• No incluye trabajos adicionales no descritos.').split('\n').filter(Boolean).map(x=>`<div>${s270_safe(x)}</div>`).join('');
+  const banco=[emp.banco,emp.cuenta,emp.cci].filter(Boolean).map(x=>s270_safe(x)).join(' · ');
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${s270_safe(q.numero||'Cotización')}</title><style>
+  @page{size:A4;margin:8mm}*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:#0b1f33;margin:0;font-size:10.2px;line-height:1.25;position:relative}.wm{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:68%;opacity:.06;z-index:-1}.head{display:grid;grid-template-columns:95px 1fr 155px;gap:10px;align-items:start;border-bottom:3px solid #0f766e;padding-bottom:6px}.logo{max-width:90px;max-height:65px;object-fit:contain}.brand{font-size:17px;font-weight:900;color:#0f766e;text-transform:uppercase}.emp{font-size:9.3px}.title{text-align:right}.title h1{font-size:22px;margin:0;color:#0b1f33}.num{font-size:14px;font-weight:900;color:#b91c1c;margin-top:3px}.box{border:1px solid #cbd5e1;border-radius:7px;padding:6px;margin-top:7px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px}.intro{margin:7px 0 5px;text-align:justify}.sec{font-weight:900;color:#0f766e;margin:7px 0 3px;text-transform:uppercase}table{width:100%;border-collapse:collapse;margin:3px 0 6px}th{background:#0f766e;color:white;font-size:9px}th,td{border:1px solid #94a3b8;padding:4px;vertical-align:top}.c{text-align:center}.r{text-align:right}.tot{width:230px;margin-left:auto}.tot div{display:flex;justify-content:space-between;border:1px solid #94a3b8;border-bottom:0;padding:4px 7px}.tot div:last-child{border-bottom:1px solid #94a3b8;background:#0f766e;color:white;font-weight:900;font-size:12px}.cond{display:grid;grid-template-columns:1.1fr .9fr;gap:8px}.firma{width:240px;text-align:center;margin:10px auto 0}.firmaImg{max-width:170px;max-height:55px;display:block;margin:0 auto 2px}.line{border-top:1px solid #0b1f33;padding-top:4px;font-weight:700}.foot{font-size:8.5px;color:#475569;margin-top:5px;border-top:1px solid #cbd5e1;padding-top:4px;display:flex;justify-content:space-between}.noPrint{margin:0 0 5px 0}@media print{.noPrint{display:none}.box,table,.firma,.tot{break-inside:avoid}}
+  </style></head><body>${watermark}<button class="noPrint" onclick="window.print()">Imprimir / Guardar PDF</button><div class="head"><div>${logo}</div><div><div class="brand">${s270_safe(emp.nombre||'')}</div><div class="emp"><b>RUC:</b> ${s270_safe(emp.ruc||'')} &nbsp; <b>Tel.:</b> ${s270_safe(emp.telefono||'')}<br><b>Correo:</b> ${s270_safe(emp.correo||'')}<br><b>Dirección:</b> ${s270_safe(emp.direccion||'')}</div></div><div class="title"><h1>COTIZACIÓN</h1><div class="num">${s270_safe(q.numero||'')}</div><div>Fecha: ${new Date(q.fecha||Date.now()).toLocaleDateString('es-PE')}</div></div></div><div class="box grid"><div><b>Cliente:</b> ${s270_safe(cliente)}</div><div><b>RUC:</b> ${s270_safe(c.ruc||q.clienteRuc||'')}</div><div><b>Establecimiento:</b> ${s270_safe(est)}</div><div><b>Área usuaria:</b> ${s270_safe(area||'-')}</div><div><b>Tipo de servicio:</b> ${s270_safe(q.tipo||'Servicio técnico')}</div><div><b>Modalidad:</b> ${s270_safe(q.config||'')}</div></div><p class="intro">Por medio de la presente, remitimos nuestra propuesta económica para la atención del servicio solicitado, según el siguiente detalle:</p><div class="sec">1. Detalle económico</div><table><thead><tr><th style="width:28px">Ítem</th><th>Descripción</th><th style="width:48px">Cant.</th><th style="width:70px">P. Unit.</th><th style="width:78px">Subtotal</th></tr></thead><tbody>${itemRows}</tbody></table>${eqRows?`<div class="sec">2. Equipo(s) considerado(s)</div><table><thead><tr><th>Ítem</th><th>Equipo</th><th>Marca</th><th>Modelo</th><th>Serie</th></tr></thead><tbody>${eqRows}</tbody></table>`:''}<div class="tot"><div><span>Subtotal</span><b>${s270_money(q.subtotal)}</b></div><div><span>IGV 18%</span><b>${s270_money(q.igv)}</b></div><div><span>Total</span><b>${s270_money(q.total)}</b></div></div><div class="sec">Condiciones comerciales</div><div class="cond"><div class="box"><b>Observaciones:</b>${obs}</div><div class="box"><div><b>Forma de pago:</b> ${s270_safe(emp.formaPago||'Según coordinación')}</div><div><b>Tiempo de ejecución:</b> ${s270_safe(emp.tiempoEjecucion||'Según programación')}</div><div><b>Lugar del servicio:</b> ${s270_safe(emp.lugarServicio||est||'Establecimiento del cliente')}</div><div><b>Validez:</b> ${s270_safe(emp.validez||'15 días calendario')}</div><div><b>Garantía:</b> ${s270_safe(emp.garantia||'Según alcance del servicio')}</div></div></div><div class="firma">${firma}<div class="line">${s270_safe(emp.gerente||'Representante legal')}<br>${s270_safe(emp.cargoGerente||emp.cargo||'Representante')}</div></div><div class="foot"><span>${banco?`Banco / cuenta: ${banco}`:'Documento generado por SERVITEC PRO'}</span><span>${s270_safe(emp.nombre||'')}</span></div></body></html>`;
+}
+function quoteDoc(q){return s270_quoteDoc(q)}
+function doc(q,t){return String(t||'').toUpperCase().includes('COT')?s270_quoteDoc(q):(String(t||'').toUpperCase().includes('INFORME')?informeDoc(q):actaDoc(q))}
+function printQuote(id,t){
+  const q=(state.cotizaciones||[]).find(x=>String(x.id)===String(id));
+  if(!q)return alert('No se encontró la cotización seleccionada.');
+  const html=s270_quoteDoc(q);
+  const w=window.open('','_blank');
+  if(!w){
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=(q.numero||'cotizacion')+'.html';a.click();
+    alert('El navegador bloqueó la ventana emergente. Se descargó un HTML imprimible. Permite ventanas emergentes para generar PDF directo.');return;
+  }
+  w.document.write(html);w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch(e){}},350);
+}
+const s270_oldNewDraft=typeof newDraft==='function'?newDraft:null;
+newDraft=function(){
+  s270_ensureAll();
+  const emp=s270_activeEmpresa();
+  const clientes=(state.clientes||[]).filter(c=>!c.empresaId||c.empresaId===emp.id);
+  const c=clientes[0]||state.clientes[0]||{}; const e=(c.establecimientos||[])[0]||{}; const a=(e.areas||[])[0]||{};
+  return {id:uid(),numero:currentNextDocNumber('cotizacion'),codigo:currentNextDocNumber('cotizacion'),correlativo:currentNextDocNumber('cotizacion'),empresaId:emp.id,clienteId:c.id||'',estId:e.id||'',areaId:a.id||'',tipo:'Mantenimiento preventivo',config:MODES.GENERAL,equipos:[],acts:[],repuestos:[],subtotal:0,igv:0,total:0,fecha:new Date().toISOString(),estado:'Cotización'};
+}
+saveQuote=function(){
+  if(!draft)return;
+  s270_ensureAll();
+  const idx=(state.cotizaciones||[]).findIndex(x=>String(x.id)===String(draft.id));
+  const original=idx>=0?state.cotizaciones[idx]:null;
+  if(original){
+    draft.id=original.id;draft.numero=original.numero;draft.codigo=original.codigo||original.numero;draft.correlativo=original.correlativo||original.numero;draft.empresaId=original.empresaId||draft.empresaId;
+    ['ordenNumero','ordenTipo','siaf','execRows','execEquipos','evidencias','actaNumero','informeNumero'].forEach(k=>{if(draft[k]==null&&original[k]!=null)draft[k]=original[k]});
+  }else{
+    draft.empresaId=draft.empresaId||s270_activeEmpresa().id;
+    const code=s270_consumeCot(draft.empresaId);
+    draft.numero=code;draft.codigo=code;draft.correlativo=code;
+  }
+  try{const data=cdata();draft.clienteNombre=data.c?.nombre||draft.clienteNombre||'';draft.establecimientoNombre=data.e?.nombre||draft.establecimientoNombre||'';draft.areaNombre=data.a?.nombre||draft.areaNombre||'';}catch(e){}
+  s270_applyTax(draft);
+  const clean=s270_clone(draft);
+  if(idx>=0)state.cotizaciones[idx]=clean;else state.cotizaciones.push(clean);
+  state.selectedCotizacionId=clean.id;try{localStorage.setItem('servitec_cot_sel',clean.id)}catch(e){}
+  draft=null;s270_persist();render();
+}
+function s270_exportBackup(){
+  s270_persist();
+  const name='RESPALDO_SERVITEC_'+new Date().toISOString().slice(0,10)+'.json';
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download=name;a.click();
+}
+function s270_importBackup(file){
+  if(!file)return; const r=new FileReader();
+  r.onload=()=>{try{const data=JSON.parse(r.result);state={...s270_clone(seed),...data};s270_ensureAll();s270_persist();alert('Respaldo importado correctamente.');render();}catch(e){alert('No se pudo importar el respaldo JSON.')}};
+  r.readAsText(file);
+}
+function s270_configView(){
+  const emp=s270_activeEmpresa();s270_ensureEmpresa(emp);
+  const rows=[['cotizacion','Cotización'],['acta','Acta'],['informe','Informe'],['os','Orden servicio']].map(([k,l])=>`<tr><td>${l}</td><td><input value="${s270_safe(emp.prefijos[k]||'')}" onchange="setPref('${k}',this.value);render()"></td><td><input type="number" value="${s270_nextNumber(k,emp)}" onchange="setCorr('${k}',this.value);render()"></td><td><b>${s270_format(k,s270_nextNumber(k,emp),emp)}</b></td></tr>`).join('');
+  return `<section class="wrap">${back()}<h2>Configuración</h2><p class="notice"><b>Empresa activa:</b> ${s270_safe(emp.nombre||'-')}. En correlativos coloca el <b>siguiente número a emitir</b>. Ejemplo: si colocas 206, la próxima cotización será <b>COT-${s270_year()}-0206</b>.</p><h3>Correlativos por empresa</h3><div class="tableWrap"><table><thead><tr><th>Documento</th><th>Prefijo</th><th>Siguiente número a emitir</th><th>Vista previa</th></tr></thead><tbody>${rows}</tbody></table></div><h3>Respaldos</h3><div class="card"><p>Antes de subir versiones nuevas, exporta un respaldo JSON. Esto evita volver a digitar empresas, clientes y cotizaciones.</p><button class="btn green" onclick="s270_exportBackup()">Exportar respaldo JSON</button><label class="btn" style="display:inline-block;margin-left:8px">Importar respaldo JSON<input type="file" accept="application/json,.json" style="display:none" onchange="s270_importBackup(this.files[0])"></label></div><h3>Estado técnico</h3><p class="notice">Almacenamiento sincronizado: servitec_pro_state_v1327 + servitec_pro_state_v1317 + servitec_v139. Build estático para Vercel: src/ → dist/.</p></section>`;
+}
+views.Configuración=s270_configView;
+const s270_oldDashboard=views.Dashboard;
+views.Dashboard=function(){s270_ensureAll();const emp=s270_activeEmpresa();const qs=(state.cotizaciones||[]).filter(q=>q.empresaId===emp.id);const cs=state.clientes||[];return `<section class="wrap"><h2>Dashboard</h2><div class="grid"><div class="card"><b>Empresa activa</b><h3>${s270_safe(emp.nombre||'-')}</h3></div><div class="card"><b>Clientes</b><h2>${cs.length}</h2></div><div class="card"><b>Cotizaciones de empresa activa</b><h2>${qs.length}</h2></div><div class="card"><b>Próxima cotización</b><h3>${currentNextDocNumber('cotizacion')}</h3></div></div><p class="notice">Versión estable: PDF profesional, correlativos por empresa, respaldo JSON y migración automática de datos antiguos.</p></section>`}
+const s270_oldQuoteList=typeof quoteList==='function'?quoteList:null;
+quoteList=function(){s270_ensureAll();const emp=s270_activeEmpresa();const qs=(state.cotizaciones||[]).filter(q=>(q.empresaId||emp.id)===emp.id);return `<section class="wrap">${back()}<h2>Cotizaciones</h2><p class="notice"><b>Empresa activa:</b> ${s270_safe(emp.nombre||'-')} | Próxima: <b>${currentNextDocNumber('cotizacion')}</b></p><button class="btn green" onclick="draft=newDraft();render()">+ Nueva cotización</button>${table(['N°','Cliente','Configuración','Estado','Subtotal','IGV','Total','Acciones'],qs.map(q=>{s270_applyTax(q);return [q.numero,q.clienteNombre,q.config,estadoBadge(q),s270_money(q.subtotal),s270_money(q.igv),s270_money(q.total),`<div class="actions"><button class="btn" onclick="draft=clone(state.cotizaciones.find(x=>x.id==='${q.id}'));render()">Editar</button><button class="btn green" onclick="printQuote('${q.id}','COTIZACIÓN')">PDF</button><button class="btn" onclick="tab='Ejecución';localStorage.setItem('servitec_exec_qid','${q.id}');render()">Ejecutar</button><button class="btn danger" onclick="delQuote('${q.id}')">Eliminar</button></div>`] }))}</section>`}
+const s270_oldRender=render;
+render=function(){
+  s270_ensureAll();
+  try{if(typeof s2410_fixExistingDuplicatedCodes==='function')s2410_fixExistingDuplicatedCodes();}catch(e){}
+  const user=typeof s240_current==='function'?s240_current():null;
+  if(typeof s240_loginView==='function'&&!user){app.innerHTML=s240_loginView();return}
+  const nav=typeof s240_navByRole==='function'?s240_navByRole():['Dashboard','Empresas','Clientes','Cotizaciones','Ejecución','Actas','Informes','Inventario','Configuración','Usuarios'];
+  let content=(views[tab]||views.Dashboard)();
+  if(typeof s240_hideMoneyHTML==='function')content=s240_hideMoneyHTML(content);
+  app.innerHTML=`<header class="top"><div><h1>${SERVITEC_VERSION_ESTABLE}</h1><b>Base estable: correlativos reales + PDF profesional + respaldo JSON + ejecución por actividad</b></div><div class="tag">${user?`<button class="btn" onclick="s240_logout()">Salir</button>`:cloud}</div></header><nav class="nav">${nav.map(x=>`<button class="${tab===x?'active':''}" onclick="tab='${x}';draft=null;render()">${x}</button>`).join('')}</nav><main>${content}</main>`;
+  bind(); if(typeof initSignaturePads==='function')initSignaturePads();
+}
+s270_persist();
+render();
+
+
+/* ============================================================
+   V13.27.2 - BLOQUE FINAL ANTIREGRESIÓN
+   Garantiza que ninguna capa heredada vuelva a dejar datos en cero.
+============================================================ */
+(function(){
+  const VERSION='SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL';
+  function score(s){return (s?.empresas?.length||0)*1000+(s?.cotizaciones?.length||0)*800+(s?.clientes?.length||0)*300+(s?.usuarios?.length||0)*20}
+  function read(k){try{const raw=localStorage.getItem(k);return raw?JSON.parse(raw):null}catch(e){return null}}
+  function writeAll(){try{const raw=JSON.stringify(state);['servitec_pro_state_v1327','servitec_pro_state_v1317','servitec_v139'].forEach(k=>localStorage.setItem(k,raw));}catch(e){}}
+  const candidates=[state,read('servitec_pro_state_v1327'),read('servitec_pro_state_v1317'),read('servitec_v139')].filter(x=>x&&typeof x==='object').sort((a,b)=>score(b)-score(a));
+  if(candidates[0] && score(candidates[0])>score(state)){ state={...clone(seed),...candidates[0]}; }
+  if(typeof s270_ensureAll==='function')s270_ensureAll();
+  // Selección inteligente: si existe una empresa con cotizaciones, úsala como activa; si no, conservar la activa.
+  try{
+    const qEmp=(state.cotizaciones||[]).find(q=>q.empresaId)?.empresaId;
+    if(qEmp && (state.empresas||[]).some(e=>e.id===qEmp)) state.activeEmpresaId=qEmp;
+  }catch(e){}
+  writeAll();
+  // Forzar título visible correcto aunque quede HTML anterior en caché.
+  const oldRender=render;
+  render=function(){
+    oldRender();
+    const h=document.querySelector('.top h1'); if(h) h.textContent=VERSION;
+    const title=document.querySelector('title'); if(title) title.textContent=VERSION;
+  };
+  render();
+})();

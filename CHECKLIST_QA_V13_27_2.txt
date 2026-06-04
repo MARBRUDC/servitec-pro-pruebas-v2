@@ -1,0 +1,16 @@
+SERVITEC PRO V13.27.2 - CHECKLIST QA
+
+[OK] Version interna unificada V13.27.2.
+[OK] src/main.js, dist/main.js, index.html y README sincronizados.
+[OK] Almacenamiento lee y migra desde servitec_pro_state_v1327, servitec_pro_state_v1317 y servitec_v139.
+[OK] Persistencia escribe en las tres claves para no perder datos entre versiones.
+[OK] Correlativo por empresa: el campo es el siguiente numero a emitir. 206 => COT-2026-0206.
+[OK] PDF usa empresa de la cotizacion / empresa activa, no empresas[0].
+[OK] Exportar/importar respaldo JSON disponible en Configuracion.
+
+PRUEBA MANUAL OBLIGATORIA:
+1. Importar respaldo JSON si la app aparece vacia.
+2. Activar MB CLANEL.
+3. Verificar COT-2026-0001 o COT-2026-0206 segun correlativo configurado.
+4. Generar PDF.
+5. Crear nueva cotizacion con correlativo 206 y confirmar COT-2026-0206.

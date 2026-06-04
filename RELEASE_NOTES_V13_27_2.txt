@@ -1,0 +1,9 @@
+SERVITEC PRO V13.27.2 ESTABLE FUNCIONAL
+
+Correcciones criticas:
+- Se elimina la inconsistencia V13.27.x con codigo heredado V13.26.x.
+- Carga robusta de datos desde servitec_pro_state_v1327, servitec_pro_state_v1317 y servitec_v139.
+- Si una clave tiene mas empresas/cotizaciones/clientes, se toma como base principal.
+- Persistencia sincronizada en las tres claves para evitar que desaparezcan empresas, clientes y cotizaciones.
+- Correlativos por empresa como siguiente numero a emitir.
+- PDF profesional compacto con marca de agua, logo, firma y empresa activa.
