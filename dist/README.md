@@ -1,4 +1,4 @@
-# SERVITEC PRO V13.28.1 FIX FORMULARIOS ESTABLE
+# SERVITEC PRO V13.28.2 TIPO SERVICIO RESTAURADO
 
 Versión reconstruida desde cero para evitar mezcla de código antiguo.
 
@@ -12,3 +12,9 @@ Incluye:
 - Cotización con PDF profesional y marca de agua.
 - Ejecución por actividad con estado, comentario, recomendación y evidencias antes/durante/después.
 - Acta e informe con estructuras diferentes.
+
+
+## V13.28.2
+- Se restauró el campo Tipo de servicio independiente de la Configuración.
+- Cabecera de cotización: Cliente, Establecimiento, Área, Tipo de servicio y Configuración.
+- PDF imprime Tipo de servicio y Configuración.
