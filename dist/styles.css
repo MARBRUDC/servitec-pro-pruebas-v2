@@ -16,3 +16,5 @@
 .loginBox{min-height:80vh;display:flex;align-items:center;justify-content:center;background:#eef7fb}
 .loginCard{width:min(420px,92vw);background:white;border:1px solid #cfe3ff;border-radius:18px;padding:28px;box-shadow:0 12px 35px rgba(0,0,0,.12)}
 .loginCard h2{margin:0;color:#007a78}.loginCard h3{margin:8px 0 6px}.loginCard label{display:block;font-weight:700;margin:12px 0}.loginCard input{width:100%;box-sizing:border-box;margin-top:6px}.small{font-size:12px}
+
+.passWrap{display:flex;align-items:center;gap:6px}.passWrap input{flex:1}.eyeBtn{border:1px solid #ccd3df;background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer}.checkline{display:flex;align-items:center;gap:8px;font-size:13px}.topActions{align-items:center;justify-content:flex-end;flex-wrap:wrap}.evblock{break-inside:avoid;border:1px solid #d9e1ea;border-radius:10px;padding:8px;margin:8px 0}.evblock .evids{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.evblock img{max-width:100%;max-height:130px;object-fit:contain;border:1px solid #ddd;border-radius:6px}

@@ -1,10 +1,3 @@
-# SERVITEC PRO V13.28.8 LOGIN Y SESIÓN REAL
+# SERVITEC PRO V13.28.9 DOCUMENTOS DINÁMICOS Y EXPORTACIÓN
 
-Base V13.28 con ejecución sustentada por tipo de servicio.
-
-## Cambios principales
-- Cada actividad muestra claramente a qué equipo pertenece.
-- Cada actividad tiene estado, comentario, recomendación y evidencias Antes/Durante/Después.
-- La ejecución cambia según tipo de servicio: preventivo, correctivo, calibración, diagnóstico, instalación, venta y servicio + repuestos.
-- Acta e informe imprimen sustento por actividad.
-- Se mantienen usuarios, permisos, firmas, PDF, correlativos y fix de formularios.
+Incluye: login con ver contraseña, acta e informe diferenciados según tipo de servicio y ejecución, exportación Word/Excel por módulo y por documento, sin modificar el botón PDF existente.
