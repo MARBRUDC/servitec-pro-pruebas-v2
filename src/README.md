@@ -1,4 +1,4 @@
-# SERVITEC PRO V13.28.7 EJECUCIÓN DETALLADA POR SERVICIO
+# SERVITEC PRO V13.28.8 LOGIN Y SESIÓN REAL
 
 Base V13.28 con ejecución sustentada por tipo de servicio.
 

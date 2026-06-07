@@ -13,3 +13,6 @@
 .evids img{max-width:100%;max-height:160px;object-fit:contain;border:1px solid #ddd;border-radius:8px}
 .evids small{font-weight:800;color:#006b5d}
 @media print{.execActividad,.evblock{page-break-inside:avoid}.evids{grid-template-columns:repeat(3,1fr)}}
+.loginBox{min-height:80vh;display:flex;align-items:center;justify-content:center;background:#eef7fb}
+.loginCard{width:min(420px,92vw);background:white;border:1px solid #cfe3ff;border-radius:18px;padding:28px;box-shadow:0 12px 35px rgba(0,0,0,.12)}
+.loginCard h2{margin:0;color:#007a78}.loginCard h3{margin:8px 0 6px}.loginCard label{display:block;font-weight:700;margin:12px 0}.loginCard input{width:100%;box-sizing:border-box;margin-top:6px}.small{font-size:12px}
