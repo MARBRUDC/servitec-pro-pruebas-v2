@@ -1,21 +1,10 @@
-# SERVITEC PRO V13.28.5 TIPO SERVICIO Y SUBCONFIGURACIONES
+# SERVITEC PRO V13.28.7 EJECUCIÓN DETALLADA POR SERVICIO
 
-Corrección: el tipo de servicio se separa de la configuración de cotización.
+Base V13.28 con ejecución sustentada por tipo de servicio.
 
-## Tipo de servicio
-- Mantenimiento preventivo
-- Mantenimiento correctivo
-- Calibración
-- Diagnóstico
-- Instalación
-- Venta
-- Servicio + repuestos
-
-## Configuración / subgrupo
-- Actividades generales → varios equipos
-- Cada equipo con sus propias actividades
-- Servicio + repuestos
-- Solo equipos
-- Solo repuestos
-
-Mantiene formularios sin pérdida de foco, usuarios/permisos, firmas en acta y estructura estática para Vercel.
+## Cambios principales
+- Cada actividad muestra claramente a qué equipo pertenece.
+- Cada actividad tiene estado, comentario, recomendación y evidencias Antes/Durante/Después.
+- La ejecución cambia según tipo de servicio: preventivo, correctivo, calibración, diagnóstico, instalación, venta y servicio + repuestos.
+- Acta e informe imprimen sustento por actividad.
+- Se mantienen usuarios, permisos, firmas, PDF, correlativos y fix de formularios.
