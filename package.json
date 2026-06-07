@@ -1,7 +1,11 @@
 {
+  "name": "servitec-pro-v13-17-cierre-operativo",
+  "version": "13.17.0",
+  "private": true,
   "scripts": {
-    "build": "node build.cjs",
-    "start": "node local-server.cjs"
+    "build": "node build.js",
+    "dev": "node server.js",
+    "start": "node server.js"
   },
   "dependencies": {},
   "devDependencies": {}

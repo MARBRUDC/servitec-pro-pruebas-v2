@@ -1,21 +1,28 @@
-# SERVITEC PRO V13.28.5 TIPO SERVICIO Y SUBCONFIGURACIONES
+# SERVITEC PRO V13.25.6 FIX BUCLE EJECUCIÓN
 
-Corrección: el tipo de servicio se separa de la configuración de cotización.
+Corrección crítica sobre V13.25.5:
 
-## Tipo de servicio
-- Mantenimiento preventivo
-- Mantenimiento correctivo
-- Calibración
-- Diagnóstico
-- Instalación
-- Venta
-- Servicio + repuestos
+- Corrige "Maximum call stack size exceeded".
+- Elimina bucle de recálculo en Cotizaciones/Ejecución.
+- Recalcula totales sin llamar qtotal dentro de qtotal.
+- Sanea cotizaciones sin activar funciones recursivas.
+- Ejecución vuelve a abrir.
+- Si un registro sigue incompleto, muestra lista básica recuperable.
 
-## Configuración / subgrupo
-- Actividades generales → varios equipos
-- Cada equipo con sus propias actividades
-- Servicio + repuestos
-- Solo equipos
-- Solo repuestos
+Mantiene:
+- Usuarios y roles.
+- Cotizaciones.
+- Ejecutar.
+- Documentos por estado.
+- Venta con OS/OC y SIAF.
+- Correlativos.
 
-Mantiene formularios sin pérdida de foco, usuarios/permisos, firmas en acta y estructura estática para Vercel.
+Archivos incluidos:
+- build.js
+- index.html
+- main.js
+- package.json
+- README.md
+- server.js
+- styles.css
+- supabase-schema.sql
